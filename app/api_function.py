@@ -81,10 +81,6 @@ def tiktok_downloader(link: str) -> dict:
     res = requests.post(url,
       json=data,
       headers=headers,
-      proxies={
-        "http": "92.255.107.53:8080",
-        "https": "92.255.107.53:8080"
-      },
       timeout=10
     )
     html = BeautifulSoup(res.content, 'html.parser')
