@@ -6,11 +6,41 @@ function scroll(){
   })
   const msg = document.getElementById('msg-cont');
   msg.scrollTop = msg.scrollHeight;
-  //document.querySelector('.message_box:nth-last-child(1)').style.marginBottom = '2em'
+}
+
+// random message id
+const messageID = (count) => {
+  const char = "abcdefghijklmnopqrstuvwxyz1237654098QWERTYUIOPASDFGHJKLZXCVBNM";
+  let id = 'MSG-'
+  for (let i=0;i<count*2;i++){
+    const index = Math.floor(Math.random() * char.length)
+    id += char[index-1]
+  }
+  return id
+}
+
+// Getter
+const getMessages = () => $('.message')
+const getReplyData = () => {
+  const sender = $('.REPLY .data-user').text()
+  const messageID = $('.REPLY .data-message_id').text()
+  const text = $('.REPLY .data-text').text()
+  let images = $('.REPLY .data-images').text()
+  let videos = $('.REPLY .data-videos').text()
+  if (images) images = images.split(',');
+  if (videos) videos = videos.split(',');
+  $('.REPLY').remove()
+  return {
+    id: messageID,
+    text: text,
+    sender: sender,
+    images: images || [],
+    videos: videos || []
+  }
 }
 
 // check if link or path
-function attachCheck(src){
+const attachCheck = (src) => {
   if (src.includes('https://')){
     return src
   }else{
@@ -18,8 +48,9 @@ function attachCheck(src){
   }
 }
 
+
 // Create an attachemnt imagee
-function createImage(attachment){
+const createImage = (attachment) => {
   const image = $('<img />', {
     src: attachCheck(attachment.src),
     alt: attachment?.title ?? 'No title!',
@@ -29,24 +60,26 @@ function createImage(attachment){
 }
 
 // Creste video
-function createVideo(video){
+const createVideo = (video) => {
   return $("<video>")
     .attr('height', video?.height ?? null)
     .attr('controls', '')
     .append($("<source />").attr('src', attachCheck(video.src)))
 }
 
-function MATCHER(reg,text, func){
+// Format the text
+const MATCHER = (reg,text, func) => {
   let inp = text.match(reg)
   if (inp){
     func(inp)
   }
 }
-// Format the text
-function text(text, $body){
+const text = (text, $body) => {
   const span = (t) => `${t==='>'?'&gt':'&lt'}`;
   text = text.replace(/</g, span('<')).replace(/>/g, span('>'));
   text = text.replace(/\n/g, '<br>')
+
+  //text = text.replace(/:line:/g, '<hr>')
   
   const linkRegex = /!\[([^\]]+)\]\(([^\)]+)\)/g
   const iconRegex = /:icon\[(.*?)\]/g
@@ -93,99 +126,12 @@ function text(text, $body){
   $body.append($('<p>').html(text));
 }
 
-function displayMessage({ id, data, reply_to }, isUser=false){
-  if (!data) return;
-  const $messageBox = $('<div>')
-    .addClass(`message_box ${isUser?'me':'other'}`)
-    .attr('id', id);
-  const $message = $('<div>')
-    .addClass('message')
-  const $label = $('<div>')
-    .addClass('label').attr('data-text', isUser?'You':'BOT').text(isUser ? 'You':'BOT');
-  const $mainMessage = $('<div>')
-    .addClass('main-message');
-  
-  const $body = $('<div>').addClass('body');
-  const $attachment = $('<div>').addClass('attachment').hide();
-  const $skeleton = $('<div>').addClass('skeleton').append($('<div>').addClass('skeleton-image'));
-  
-  let hasBody = false;
-  let hasAttach = false;
-  
-  if (reply_to) $label.text(`${isUser?'You':'BOT'} replied to ${reply_to.sender==='You'?'your':reply_to.sender} message`);
-  else{
-    if ($('.message_box:nth-last-child(1)').hasClass(isUser?'me':'other')){
-      $('.message_box:nth-last-child(1)').css('margin-bottom', '3px')
-      $($label).hide()
-    }
-  }
-  
-  if (typeof data === 'string'){text(data, $body);hasBody=true}
-  else {
-    const { body, attachment } = data;
-    
-    body ? hasBody=true:hasBody;
-    if (attachment) attachment.length >= 1 ? hasAttach=true:hasAttach;
-    
-    // send Text
-    hasBody ? text(body, $body):null
-    
-    // Send Attachment
-    if (attachment){
-      for (const attach of attachment){
-        if (attach?.type === 'image'){
-          const img = createImage(attach);
-          img.attr('width', '49%')
-          if ((attachment.indexOf(attach)%2)!==0) img.css('margin-left', '2%')
-          if (attachment.length === 1) img.css('width','100%');
-          img.on('load', () => {
-            $skeleton.hide();
-            $attachment.show()
-          })
-          $attachment.append(img)
-        }else if(attach?.type === 'video'){
-          const video = createVideo(attach);
-          video.css('width', '100%')
-          video.css('border-radius', '11px')
-          video[0].onloadedmetadata = function(){
-            $skeleton.hide();
-            $attachment.show()
-          }
-          $attachment.append(video)
-        }else{
-          $skeleton.hide()
-          $attachment.show()
-          $attachment.append(
-            $('<div>').addClass('invalidType').append(
-              $('<div>')
-              .addClass('text')
-              .text('Invalid attachment type')
-            )
-          )
-        }
-      }
-    }
-  }
-  
-  if (hasBody) $mainMessage.append($body);
-  if (hasAttach) $mainMessage.append($skeleton).append($attachment);
-  $message.append($label).append($('<div>').addClass('__message').append($mainMessage));
-  $messageBox.append($message);
-  
-  $('.messages').append($messageBox)
-  
-  $('.other .main-message').css('border-color', isDarkmode?'var(--semiDark)':'#c5c5c4');
-  $('.other .body p').css('color', isDarkmode?'var(--text)':'#1f1f1d')
-  PorEacg()
-  scroll()
-}
-
+// Reply method
 $('#rply-remove').click(function(){$('.REPLY').remove()})
-function removeMe(cls){
+const removeMe = (cls) => {
   $(cls).hide()
   $(cls).html('')
 }
-function getMessages(){return $('.message')}
 function PorEacg(){
   // View Image
   $('.attachment img').click(function(){
@@ -205,7 +151,6 @@ function PorEacg(){
     })
   })
 }
-
 function showOtherClicks(data){
   const user = $(data).find('.label').attr('data-text')
   const messageID = $(data).parent().attr('id')

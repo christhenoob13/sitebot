@@ -3,10 +3,28 @@
 <script>
   let isDarkmode = true
   let basePath = "{{ url_for('static', filename='cache/') }}"
+  // Change mode
+  $('#mode').click(function(){
+    isDarkmode = isDarkmode ? false:true;
+    //isDarkmode = isDarkmode ? true:false;
+    $(this).css({background: isDarkmode?'#323549':'white',color:isDarkmode?'var(--text)':'#e67919'});
+    $(this).html(`<i class="fa-solid ${isDarkmode?'fa-moon':'fa-sun'}"></i>`);
+    if (window.innerWidth <= 768) $('body').css('background', isDarkmode?'var(--dark)':'var(--text)');
+    $('.container').css('background', isDarkmode?'var(--dark)':'var(--text)');
+    $('.messages').css('background', isDarkmode?'var(--dark)':'var(--text)');
+    $('.input_container').css('background', isDarkmode?'var(--dark)':'var(--text)');
+    $('.input_container').css('border-top', isDarkmode?'2px solid var(--semiDark)':'2px solid #949493');
+    $('.other .main-message').css('border-color', isDarkmode?'var(--semiDark)':'#c5c5c4');
+    $('.inner-spacer').css('border-color', isDarkmode?'var(--semiDark)':'#c5c5c4');
+    $('.other .body p').css('color', isDarkmode?'var(--text)':'#1f1f1d');
+    $('#input').css('color', isDarkmode?'var(--text)':'#1f1f1d');
+    $('.spacer .text p').css('color', isDarkmode?'var(--text)':'#1f1f1d');
+    $('.rply-text').css('color', isDarkmode?'#bababa':'#2e2c2c');
+  })
 </script>
 <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
-<script src="{{ url_for('static', filename='actions.js') }}"></script>
 <script src="{{ url_for('static', filename='chat.js') }}"></script>
+<script src="{{ url_for('static', filename='actions.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 <script type="text/javascript" charset="utf-8">
   var io = io();
@@ -45,6 +63,23 @@
       </div>
     </div>
     
+    <!--
+    <div class="message_box other" id="tests5s">
+      <div class="message">
+        <div class="label" data-text="Bot">Bot</div>
+        <div class="__message">
+          <div class="main-message">
+            <div class="body">
+              <p>
+                Hello World
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    -->
+  
   </div>
   
   <div class="input_container">

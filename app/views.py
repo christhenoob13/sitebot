@@ -11,4 +11,4 @@ def root():
   sid = session.get('sid')
   if not sid:
     session['sid'] = f"ROOM-{token_hex(20)}"
-  return render_template('chat.html', show_eruda=False,title="Webchat", session=session.get('sid', 'global')), 200
+  return render_template('chat.html', show_eruda=True,title="Webchat", session=session.get('sid', 'global')), 200
