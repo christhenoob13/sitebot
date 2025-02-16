@@ -1,6 +1,4 @@
-from config import COMMANDS, PREFIX
-
-def get_page(commands, page=1):
+def get_page(commands, PREFIX, page=1):
   if page > len(commands):
     return f":danger-color[:icon[fa-solid fa-warning]] Page not found, total command page is {len(commands)}"
   message = ":icon[fa-solid fa-gear] :bold[Command Lists]\n"
@@ -12,7 +10,7 @@ def get_page(commands, page=1):
   message += f":bold[PAGE]: ({page}/{len(commands)})"
   return message
 
-def get_all(commands):
+def get_all(commands, PREFIX):
   message = ":icon[fa-solid fa-gear] :bold[Command list]\n"
   message += "━━━━━━━━━━━━━━━━━━━━━\n"
   for command in commands:
@@ -21,7 +19,7 @@ def get_all(commands):
   message += "━━━━━━━━━━━━━━━━━━━━━\n"
   return message
 
-def get_command(commands, name):
+def get_command(commands,PREFIX, name):
   for command in commands:
     for cmd in command:
       if cmd['name'] == name:
@@ -33,6 +31,8 @@ def get_command(commands, name):
   return f":danger-color[:icon[fa-solid fa-warning]] Command '{name}' not found."
 
 def help(bot, data):
+  PREFIX = bot.prefix
+  COMMANDS = bot.commands
   _cmdArray = [{
     "name": v.get('name'),
     "def": v.get('def'),
@@ -46,9 +46,9 @@ def help(bot, data):
   isPage = True
   
   if not args:
-    return bot.sendMessage(get_page(commands))
+    return bot.sendMessage(get_page(commands, PREFIX))
   if args.lower() == 'all':
-    return bot.sendMessage(get_all(commands))
+    return bot.sendMessage(get_all(commands, PREFIX))
   
   _01j = [str(i) for i in range(1,11)]
   for char in list(args):
@@ -56,9 +56,9 @@ def help(bot, data):
       isPage = False
   
   if isPage:
-    return bot.sendMessage(get_page(commands, page=int(args)))
+    return bot.sendMessage(get_page(commands, PREFIX, page=int(args)))
   else:
-    return bot.sendMessage(get_command(commands, args))
+    return bot.sendMessage(get_command(commands, PREFIX, args))
 
 config = {
   "name": 'help',

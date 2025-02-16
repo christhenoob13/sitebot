@@ -1,7 +1,7 @@
 from .handleMessage import messageHandler
 from flask_socketio import SocketIO, join_room
 
-def socketHandler(io):
+def socketHandler(io, commands, config):
   @io.on('join')
   def Join(data):
     join_room(data)
@@ -15,4 +15,4 @@ def socketHandler(io):
       "reply_to": data['reply_to'],
       "id": data['id']
     }
-    messageHandler(message, room)
+    messageHandler(io, message, room, commands, config)

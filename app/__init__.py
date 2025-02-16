@@ -1,12 +1,19 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from dotenv import load_dotenv
+from bprint import log
+from box import Box
 import os
-import config
+import json
+
+try:
+  config = json.load(open('config.json', 'r'))
+except FileNotFoundError:
+  log("error", "File 'config.json' not found.")
 
 def myapp():
-  from .socket import socketHandler
-  from .loadCommands import register
+  from .bot.socket import socketHandler
+  from .bot.loadCommands import commands
   from .views import view
   from .cmdRoutes import cmd
   from .api import api
@@ -17,11 +24,12 @@ def myapp():
   )
   app.secret_key = ":(){:|:&};"
   socket = SocketIO(app)
-  config.io = socket
-  
   load_dotenv()
-  register()
-  socketHandler(socket)
+  socketHandler(
+    socket,
+    commands(Box(config)),
+    Box(config)
+  )
   
   @app.errorhandler(404)
   def not_found(e):
