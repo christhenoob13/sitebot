@@ -1,7 +1,6 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from dotenv import load_dotenv
-from bprint import log
 from box import Box
 import os
 import json
@@ -9,7 +8,7 @@ import json
 try:
   config = json.load(open('config.json', 'r'))
 except FileNotFoundError:
-  log("error", "File 'config.json' not found.")
+  print("\033[41mERROR: \033[0mFile 'config.json' not found.")
 
 def myapp():
   from .bot.socket import socketHandler
