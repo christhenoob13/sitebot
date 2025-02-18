@@ -28,14 +28,16 @@ function sendMessage({ id, data, reply_to }, isUser=false){
   
   if (typeof data === 'string'){text(data, $body);hasBody=true}
   else {
-    const { body, attachment } = data;
+    const { body, attachment, button } = data;
     
-    body ? hasBody=true:hasBody;
-    if (attachment) attachment.length >= 1 ? hasAttach=true:hasAttach;
+    body || button ? hasBody=true:hasBody;
     
     // send Text
-    hasBody ? text(body, $body):null
+    body ? text(body, $body):null
+    // send buttons
+    button ? buttons(button, $body):null
     
+    if (attachment) attachment.length >= 1 ? hasAttach=true:hasAttach;
     // Send Attachment
     if (attachment){
       for (const attach of attachment){

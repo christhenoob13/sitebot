@@ -8,6 +8,26 @@ function scroll(){
   msg.scrollTop = msg.scrollHeight;
 }
 
+// Message with buttons
+const buttons = (button, body) => {
+  button.forEach(btn => {
+    const btn_link = $('<a>');
+    const btn_click = $('<button>');
+    if (btn?.a){
+      for (let key in btn.a){
+        if (btn.a.hasOwnProperty(key)){
+          btn_link.attr(key, btn.a[key])
+        }
+      }
+    }
+    if (btn?.style){
+      btn_click.css(btn.style)
+    }
+    btn_click.text(btn?.text ?? "Click")
+    body.append(btn_link.append(btn_click))
+  })
+}
+
 // random message id
 const messageID = (count) => {
   const char = "abcdefghijklmnopqrstuvwxyz1237654098QWERTYUIOPASDFGHJKLZXCVBNM";

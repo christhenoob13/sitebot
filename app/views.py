@@ -12,3 +12,11 @@ def root():
   if not sid:
     session['sid'] = f"ROOM-{token_hex(20)}"
   return render_template('chat.html', show_eruda=True,title="Webchat", session=session.get('sid', 'global')), 200
+
+
+# @view.route('/global')
+# def global():
+#   user = session.get('username')
+#   if not user:
+#     return 
+#   return render_template('chat.html', show_eruda=True, title="Glibal chat", session="global"),200
