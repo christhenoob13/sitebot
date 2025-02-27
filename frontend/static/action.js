@@ -1,44 +1,60 @@
-// Bot func
-function sendMessage({ id, data, reply_to }, isUser=false){
+function sendMessage({ id, data, reply_to, sender }, isMe=false){
+  let isGlobal = false
+  let isUser = false
   if (!data) return;
-  const $messageBox = $('<div>')
-    .addClass(`message_box ${isUser?'me':'other'}`)
+  if (Room==='global') isGlobal = true;
+  if (sender===u_name) isUser = true;
+  const youbot = () => {
+    if (isGlobal && isUser) {return 'You'}
+    else if (isGlobal && !isUser) {return sender}
+    else if (!isGlobal && isMe) {return 'You'}
+    else{ return 'BOT' }
+  }
+  const $message_box = $("<div>")
+    .addClass(`message_box ${isMe && isUser ? 'me':'other'}`)
     .attr('id', id);
-  const $message = $('<div>')
-    .addClass('message')
+  const $message = $('<div>').addClass('message');
   const $label = $('<div>')
-    .addClass('label').attr('data-text', isUser?'You':'BOT').text(isUser ? 'You':'BOT');
-  const $mainMessage = $('<div>')
-    .addClass('main-message');
+    .addClass('label')
+    .attr('data-text', youbot())
+    .text(youbot());
+  const $mainMessage = $('<div>').addClass('main-message');
   
   const $body = $('<div>').addClass('body');
   const $attachment = $('<div>').addClass('attachment').hide();
   const $skeleton = $('<div>').addClass('skeleton').append($('<div>').addClass('skeleton-image'));
   
-  let hasBody = false;
-  let hasAttach = false;
-  
-  if (reply_to) $label.text(`${isUser?'You':'BOT'} replied to ${reply_to.sender==='You'?'your':reply_to.sender} message`);
+  // When the message replied to other message
+  console.log(reply_to)
+  if (reply_to) $label.text(`${youbot()} replied to ${reply_to?.sender===u_name?'your':reply_to.sender} message`);
   else{
-    if ($('.message_box:nth-last-child(1)').hasClass(isUser?'me':'other')){
-      $('.message_box:nth-last-child(1)').css('margin-bottom', '3px')
-      $($label).hide()
+    // (!) naguluhan ako dito
+    const $nth = '.message_box:nth-last-child(1)';
+    if ($($nth).hasClass(isUser?'me':'other')){
+      const $last_sender = $(`${$nth} .label`).attr('data-text');
+      if (!isUser && ($last_sender !== sender)){
+        {}
+      }else{
+        $($nth).css('margin-bottom', '3px')
+        $($label).hide()
+      }
     }
   }
   
+  let hasBody = false;
+  let hasAttach = false;
   if (typeof data === 'string'){text(data, $body);hasBody=true}
   else {
     const { body, attachment, button } = data;
     
     body || button ? hasBody=true:hasBody;
     
-    // send Text
+    // format message
     body ? text(body, $body):null
-    // send buttons
     button ? buttons(button, $body):null
     
+    // send with attachment
     if (attachment) attachment.length >= 1 ? hasAttach=true:hasAttach;
-    // Send Attachment
     if (attachment){
       for (const attach of attachment){
         if (attach?.type === 'image'){
@@ -78,10 +94,8 @@ function sendMessage({ id, data, reply_to }, isUser=false){
   if (hasBody) $mainMessage.append($body);
   if (hasAttach) $mainMessage.append($skeleton).append($attachment);
   $message.append($label).append($('<div>').addClass('__message').append($mainMessage));
-  $messageBox.append($message);
-  
-  $('.messages').append($messageBox)
-  
+  $message_box.append($message);
+  $('.messages').append($message_box)
   $('.other .main-message').css('border-color', isDarkmode?'var(--semiDark)':'#c5c5c4');
   $('.other .body p').css('color', isDarkmode?'var(--text)':'#1f1f1d')
   PorEacg()

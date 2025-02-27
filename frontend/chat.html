@@ -22,14 +22,15 @@
     $('.rply-text').css('color', isDarkmode?'#bababa':'#2e2c2c');
   })
 </script>
-<link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
-<script src="{{ url_for('static', filename='chat.js') }}"></script>
-<script src="{{ url_for('static', filename='actions.js') }}"></script>
+<script src="{{ url_for('static', filename='action.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 <script type="text/javascript" charset="utf-8">
   var io = io();
-  const Room = "{{ session }}"
+  const Room = "{{ session }}";
+  const u_name = Room==='global'?"{{ name }}":null
 </script>
+<link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
+<script src="{{ url_for('static', filename='util.js') }}"></script>
 <script src="{{ url_for('static', filename='socket.js') }}"></script>
 {% endblock %}
 {% block content %}

@@ -1,18 +1,24 @@
 io.emit('join', Room)
 
 io.on('sendMessage', (msg) => {
-  const reply = sendReply(msg?.reply)
-  if (reply?.error){
-    sendMessage({
-      data: reply.error,
-      id: msg.id
-    })
+  if (msg?.isUser){
+    sendMessage(msg, true)
   }else{
-    sendMessage({
-      data: msg.data,
-      reply_to: reply,
-      id: msg.id
-    })
+    const reply = sendReply(msg?.reply)
+    if (reply?.error){
+      sendMessage({
+        data: reply.error,
+        id: msg.id,
+        sender: 'BOT'
+      })
+    }else{
+      sendMessage({
+        data: msg.data,
+        reply_to: reply,
+        id: msg.id,
+        sender: "BOT"
+      })
+    }
   }
 })
 
@@ -29,23 +35,26 @@ function execute(){
   if ($('.REPLY').is(':visible')) data = getReplyData();
   if (value){
     const $ID = messageID(20)
-    sendMessage({
+    io.emit('sendMessage', {
       data: value,
-      reply_to: data ? {
+      id: $ID,
+      sender: u_name,
+      reply_to: data?{
         id: data?.id,
-        text: data?.text,
-        image: data?.images,
-        video: data?.video,
         sender: data?.sender
       }:null,
-      id: $ID
-    }, true)
+      room: Room,
+      isUser: true
+    })
+    
     input.val('');
+    
     io.emit('recieveMessage', {
       text: value,
       reply_to: data ?? '',
       id: $ID,
-      room: Room
-    });
+      room: Room,
+      sender: u_name ?? 'Sitebot user' // chat.html (ln:32)
+    })
   }
 }

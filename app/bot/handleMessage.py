@@ -15,7 +15,7 @@ def messageHandler(socket, datos, roam, commands, config):
   args = " ".join(pretty_args.split()) if pretty_args else ''
   if cmd.lower() not in commands:
     return bot.sendMessage(f":danger-color[:icon[fa-solid fa-warning]] Command '{cmd.lower()}' not found.")
-  
+
   function = commands[cmd.lower()]["def"]
   data = Box({
     "cmd": cmd.lower(),
@@ -23,6 +23,7 @@ def messageHandler(socket, datos, roam, commands, config):
     "args": args,
     "messageId": datos["id"],
     "reply_to": datos['reply_to'] if datos['reply_to'] else {},
+    "sender": datos['sender'],
     "prefix": config.bot.prefix,
     "developer": config.DEVELOPER
   })

@@ -8,10 +8,31 @@ function scroll(){
   msg.scrollTop = msg.scrollHeight;
 }
 
+// Get the reply data
+const getReplyData = () => {
+  const sender = $('.REPLY .data-user').text()
+  const messageID = $('.REPLY .data-message_id').text()
+  const text = $('.REPLY .data-text').text()
+  let buttons = $('.REPLY .data-buttons').text()
+  let images = $('.REPLY .data-images').text()
+  let videos = $('.REPLY .data-videos').text()
+  console.log(buttons);
+  if (images) images = images.split(',');
+  if (videos) videos = videos.split(',');
+  $('.REPLY').remove()
+  return {
+    id: messageID,
+    text: text,
+    sender: sender,
+    images: images || [],
+    videos: videos || []
+  }
+}
+
 // Message with buttons
 const buttons = (button, body) => {
   button.forEach(btn => {
-    const btn_link = $('<a>');
+    const btn_link = $('<a>').addClass('btn-a');
     const btn_click = $('<button>');
     if (btn?.a){
       for (let key in btn.a){
@@ -39,26 +60,6 @@ const messageID = (count) => {
   return id
 }
 
-// Getter
-const getMessages = () => $('.message')
-const getReplyData = () => {
-  const sender = $('.REPLY .data-user').text()
-  const messageID = $('.REPLY .data-message_id').text()
-  const text = $('.REPLY .data-text').text()
-  let images = $('.REPLY .data-images').text()
-  let videos = $('.REPLY .data-videos').text()
-  if (images) images = images.split(',');
-  if (videos) videos = videos.split(',');
-  $('.REPLY').remove()
-  return {
-    id: messageID,
-    text: text,
-    sender: sender,
-    images: images || [],
-    videos: videos || []
-  }
-}
-
 // check if link or path
 const attachCheck = (src) => {
   if (src.includes('https://')){
@@ -67,7 +68,6 @@ const attachCheck = (src) => {
     return basePath + src
   }
 }
-
 
 // Create an attachemnt imagee
 const createImage = (attachment) => {
@@ -79,7 +79,7 @@ const createImage = (attachment) => {
   return image
 }
 
-// Creste video
+// Create video
 const createVideo = (video) => {
   return $("<video>")
     .attr('height', video?.height ?? null)
@@ -164,19 +164,27 @@ function PorEacg(){
     })
   })
   // handle reply
-  getMessages().each(function(_,message){
+  $('.message').each(function(_,message){
     //console.log(message)
     $(message).dblclick(()=>{
       showOtherClicks(message)
     })
   })
 }
+
 function showOtherClicks(data){
   const user = $(data).find('.label').attr('data-text')
   const messageID = $(data).parent().attr('id')
   let body = $(data).find('.body > p').html().replace(/<br>/g, '\n')
+  let buttons = [];
   let images = [];
-  let videos = []
+  let videos = [];
+  $(data).find('a.btn-a').each(function(){
+    buttons.push({
+      href: $(this).attr('href'),
+      text: $(this).text()
+    })
+  })
   $(data).find('img').each(function(){
     images.push($(this).attr('src'))
   })
@@ -190,6 +198,7 @@ function showOtherClicks(data){
       <p class="data-message_id">${messageID}</p>
       <p class="data-user">${user}</p>
       <p class="data-text">${body}</p>
+      <p class="data-buttons">${JSON.stringify(buttons)}</p>
       <p class="data-images">${images}</p>
       <p class="data-videos">${videos}</p>
     </div>
